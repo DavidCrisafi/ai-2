@@ -1,21 +1,31 @@
 import argparse
 
 def stockSwap(tfbStocks, fromStockId, toStockId):
-    amount = tfbStocks[fromStockId] * 0.1
-    tfbStocks[fromStockId] -= amount
-    tfbStocks[toStockId] += amount
+    amount = tfbStocks[fromStockId]['price'] * 0.1
+    tfbStocks[fromStockId]['price'] -= amount
+    tfbStocks[toStockId]['price'] += amount
 
 def stockLookup(search, allStocks):
-    return allStocks[search]
+    for stock in allStocks:
+        if (search['name'] == stock['name']):
+            return stock
+    
+    return None
 
 def calculateReturns(tfbStocks, allStocks):
-    returns = []
-    for stockPrice in tfbStocks:
-        stockName = tfbStocks.index(stockPrice)
-        stockData = stockLookup(stockName, allStocks)
-        change = stockPrice * stockData[change]
-        newPrice = stockPrice + change
-        returns[stockName] = newPrice
+    stockReturns = []
+    for stock in tfbStocks:
+        lookup = stockLookup(stock, allStocks)
+        change = stock['price'] * lookup['change']
+        newPrice = stock['price'] + change
+        stockReturn = {
+            "name": stock['name'],
+            "price": newPrice
+        }
+        
+        stockReturns.append(stockReturn)
+    
+    return stockReturns
 
 
 

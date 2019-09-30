@@ -33,7 +33,6 @@ def main():
     parser = argparse.ArgumentParser(description='TFB Calculator', prog='PROG') # create an instance of a parser object.
     parser.add_argument('-f', '--file', help='File name of stocks', type=str, required=True)
     args = parser.parse_args()
-    list = []
 
 
     stockFileName = args.file
@@ -63,8 +62,33 @@ def main():
             "change": separatedData[CHANGE]
         }
         stocks.append(data)
+    
+    listName = []
+    chosenStock = []
+    listCount = 0
 
-    print(stocks)
+    for x in stocks:
+        listName.append(x["name"])
+
+    while listCount < 10:
+        print("Names of Companies:", listName)
+        print("Name", listCount+1, "of 10")
+        tempStr = input('Enter the name of the company you wish to invest in: ')
+        for x in stocks:
+            if x["name"].lower() == tempStr.lower():
+                print("Name found")
+                chosenStock.append(x)
+                stocks.remove(x)
+                listName.remove(tempStr.upper())
+                listCount += 1
+                break
+
+
+    print(chosenStock)
+
+
+
+
 
 if __name__ == '__main__':
     main()

@@ -29,7 +29,6 @@ def hillClimbing(money, restarts, tfbStocks):
                 selectedMove[i]['price'] = amount
                 remainingMoney -= amount
         
-        print(selectedMove)
         profit = calculateProfit(money, selectedMove)
         profitToCompare = None
         while(True):

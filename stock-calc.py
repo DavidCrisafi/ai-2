@@ -6,12 +6,12 @@ import random
 #2. Picks the move with the best improvement. If there are multiple moves with equal improvement, randomly selects one.
 #3. Repeatedly picks moves until it reaches a state where no moves improves its situation.
 #4. Restarts with a new randomly generated state.
-#5. Contnues restarting for the number of times specified.
+#5. Continues restarting for the number of times specified.
 def hillClimbing(money, restarts, tfbStocks):
     finalProfit = None
     finalSelectedMove = None
     
-    for i in range(0, restarts):
+    for z in range(0, restarts):
         #Randomizes the order of stocks before sequentially putting money in them.
         stockOrder = []
         for i in range(0, len(tfbStocks)):
@@ -28,7 +28,8 @@ def hillClimbing(money, restarts, tfbStocks):
                 amount = random.randint(0, remainingMoney)
                 selectedMove[i]['price'] = amount
                 remainingMoney -= amount
-            
+        
+        print(selectedMove)
         profit = calculateProfit(money, selectedMove)
         profitToCompare = None
         while(True):
@@ -41,8 +42,8 @@ def hillClimbing(money, restarts, tfbStocks):
                         moves.append(newStock)
             
             possibleProfits = []
-            for move in moves:
-                possibleProfits.append(calculateProfit(money, move))
+            for i in range(0, len(moves)):
+                possibleProfits.append(calculateProfit(money, moves[i]))
             
             compareIndex = None
             for i in range(0, len(possibleProfits)):
@@ -54,7 +55,7 @@ def hillClimbing(money, restarts, tfbStocks):
             
             if (profitToCompare > profit):
                 profit = profitToCompare
-                selectedMove = moves[i]
+                selectedMove = moves[compareIndex]
             else:
                 break
         
@@ -182,7 +183,7 @@ def main():
 
     #print(chosenStock)
     amount = 10000
-    profit, finalStockState, finalReturns = hillClimbing(amount, 1000, chosenStock)
+    profit, finalStockState, finalReturns = hillClimbing(amount, 1, chosenStock)
     
     if (checkValidity):
         print("RECCOMENDED STOCK PURCHASES WITH", '${:,.2f}'.format(amount))

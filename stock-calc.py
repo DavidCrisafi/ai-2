@@ -1,5 +1,6 @@
 import argparse
 import random
+import math
 
 #0. Randomly distributes a total amount among the 10 selected companies
 #1. Checks every possible move.
@@ -63,6 +64,54 @@ def hillClimbing(money, restarts, tfbStocks):
             finalSelectedMove = selectedMove
         
     return finalProfit, finalSelectedMove, calculateReturns(finalSelectedMove)
+
+def simAnnealing(money, tfbStocks, tMax = 5000, tMin = 1):
+    finalProfit = None
+    finalSelectedMove = None
+    badMoves = 0
+
+    #Randomizes the order of stocks before sequentially putting money in them.
+    stockOrder = []
+    for i in range(0, len(tfbStocks)):
+        stockOrder.append(i)
+    random.shuffle(stockOrder)
+        
+    #Sequentially puts a random amount of the available money in each stock
+    remainingMoney = money
+    selectedMove = copyStockList(tfbStocks)
+    for i in stockOrder:
+        if stockOrder.index(i) == 9:
+            selectedMove[i]['price'] = remainingMoney
+        else:
+            amount = random.randint(0, remainingMoney)
+            selectedMove[i]['price'] = amount
+            remainingMoney -= amount
+    profit = calculateProfit(money, selectedMove)
+    
+    for z in range(tMax, tMin, -5):
+        moves = []
+        for i in range(0, len(selectedMove)):
+            for j in range(0, len(selectedMove)):
+                if j != i:
+                    newStock = copyStockList(selectedMove)
+                    stockSwap(newStock, i, j)
+                    moves.append(newStock)
+            
+        nextMove = moves[random.randint(0, len(moves)-1)]
+        nextProfit = calculateProfit(money, nextMove)
+        deltaE = nextProfit - profit
+            
+        if (deltaE > 0):
+            profit = nextProfit
+            selectedMove = nextMove
+        elif math.exp(deltaE/z) > random.uniform(0.0, 1.0):
+            badMoves += 1
+            profit = nextProfit
+            selectedMove = nextMove
+        if (not finalProfit or profit > finalProfit):
+            finalProfit = profit
+            finalSelectedMove = selectedMove    
+    return finalProfit, finalSelectedMove, calculateReturns(finalSelectedMove), badMoves
             
 #Returns a list containing a copy of every dictionary in stocks
 def copyStockList(stocks):
@@ -195,6 +244,24 @@ def main():
         print('${:,.2f}'.format(profit))
     else:
         print("Error: algorithm failed to properly distribute money")
+
+    profit, finalStockState, finalReturns, badMoves = simAnnealing(amount, chosenStock, 10000)
+
+    print("\nSimulated Annealing Run:\n")
+    print("Number of 'bad' moves:", badMoves)
+    
+    if (checkValidity):
+        print("RECCOMENDED STOCK PURCHASES WITH", '${:,.2f}'.format(amount))
+        printStocks(finalStockState)
+        print("\nFINAL RETURNS")
+        printStocks(finalReturns)
+        print("\nTOTAL STOCK PRICE")
+        print('${:,.2f}'.format(totalStockPrice(finalReturns)))
+        print("\nPROFIT")
+        print('${:,.2f}'.format(profit))
+    else:
+        print("Error: algorithm failed to properly distribute money")
+
 
 if __name__ == '__main__':
     main()
